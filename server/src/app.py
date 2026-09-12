@@ -1,6 +1,6 @@
 """FastAPI application: two browser pages and the API behind them.
 
-Boots without an Anthropic key on purpose, so the config page stays usable.
+Boots without any LLM key on purpose, so the config page stays usable.
 """
 
 from __future__ import annotations
@@ -16,6 +16,7 @@ from fastapi.staticfiles import StaticFiles
 
 from src.agent.agent_service import AgentService
 from src.agent.llm_client import AnthropicLLMClient
+from src.agent.openai_client import OpenAILLMClient
 from src.agent.prompt_builder import SystemPromptBuilder
 from src.api.chat_router import router as chat_router
 from src.api.config_router import router as config_router
@@ -30,27 +31,43 @@ logging.basicConfig(
 logger = logging.getLogger("hotel-agent")
 
 
+def _build_llm(settings):
+    """Pick the provider. Anthropic is the default; OpenAI is the swap-in."""
+    if not settings.has_api_key:
+        return None
+    if settings.provider == "openai":
+        if not settings.openai_api_key.strip():
+            logger.warning("llm_provider is 'openai' but OPENAI_API_KEY is empty")
+            return None
+        return OpenAILLMClient(settings.openai_api_key, settings.openai_model)
+    if not settings.anthropic_api_key.strip():
+        logger.warning("llm_provider is 'anthropic' but ANTHROPIC_API_KEY is empty")
+        return None
+    return AnthropicLLMClient(settings.anthropic_api_key, settings.anthropic_model)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     settings = get_settings()
     app.state.settings = settings
     app.state.config_repo = FileHotelConfigRepository(settings.configs_dir)
 
-    llm = None
-    if settings.has_api_key:
-        llm = AnthropicLLMClient(settings.anthropic_api_key, settings.anthropic_model)
-    app.state.agent_service = AgentService(llm, SystemPromptBuilder(), settings)
+    app.state.agent_service = AgentService(
+        _build_llm(settings), SystemPromptBuilder(), settings
+    )
 
     port = os.environ.get("PORT", "8000")
     configs = [summary.id for summary in app.state.config_repo.list_summaries()]
     logger.info("Configured agents: %s", ", ".join(configs) or "(none)")
     if not settings.has_api_key:
         logger.warning(
-            "ANTHROPIC_API_KEY is not set — the config page works, chat will not. "
-            "Add it to .env and restart."
+            "No LLM key set — the config page works, chat will not. Add "
+            "ANTHROPIC_API_KEY or OPENAI_API_KEY to .env and restart."
         )
     else:
-        logger.info("Using model %s", settings.anthropic_model)
+        logger.info(
+            "LLM provider: %s (model %s)", settings.provider, settings.active_model
+        )
     logger.info("Chat:   http://127.0.0.1:%s/", port)
     logger.info("Config: http://127.0.0.1:%s/config", port)
 

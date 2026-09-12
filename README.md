@@ -170,7 +170,8 @@ files, and the repository Protocol is where a database would slot in later.
 | Pipeline | `pricing/calculator.py` | The order of operations is eight named stages you can read top to bottom — which is the thing that actually has to be right. |
 | Repository (Protocol) | `repository/config_repository.py` | The API layer cannot reach the filesystem; S3 or Postgres is one new class. |
 | Tool registry | `agent/tools.py` | A second tool (availability, contracting) is one class, and the agent service doesn't change. |
-| Adapter (Protocol) | `agent/llm_client.py` | The agent depends on a 5-line interface, not on the vendor's object graph — which is how the loop is testable without an API key. |
+| Adapter (Protocol) | `agent/llm_client.py`, `agent/openai_client.py` | The agent depends on a 5-line interface, not on the vendor's object graph — which is how the loop is testable without an API key. |
+| Adapter, again | `agent/openai_client.py` | Swapping providers is one class: it translates the Anthropic message shape to OpenAI's and back, so the tool loop, prompt builder and engine are untouched. |
 | Facade | `agent/agent_service.py` | One `run_turn` hides history hygiene, the tool loop, the round cap and failure handling. |
 
 A module-level assertion keeps the rule registry and the Pydantic discriminated union in
@@ -353,11 +354,21 @@ Interactive docs at `/apidocs`.
 
 ## Environment
 
+Set **`ANTHROPIC_API_KEY` or `OPENAI_API_KEY`** — either runs the whole app. Anthropic
+wins if both are set.
+
 | Variable | Required | Default | Notes |
 |---|---|---|---|
-| `ANTHROPIC_API_KEY` | **yes** | — | The app boots without it: the config page works, chat returns a readable setup message instead of crashing. |
+| `ANTHROPIC_API_KEY` | one of these | — | Default provider. |
+| `OPENAI_API_KEY` | one of these | — | Used when it is the only key set, or with `LLM_PROVIDER=openai`. |
 | `ANTHROPIC_MODEL` | no | `claude-sonnet-5` | Override if your key has a different model. A 404 surfaces as a readable chat message. |
+| `OPENAI_MODEL` | no | `gpt-4o-mini` | Same. |
+| `LLM_PROVIDER` | no | `auto` | Force `anthropic` or `openai` when both keys are present. |
 | `PORT` | no | `8000` | |
+
+With neither key the app still boots: the config page is fully usable and the chat
+returns a readable setup message instead of crashing. `GET /health` reports which
+provider and model are live.
 
 Windows (PowerShell), if `run.sh` isn't available — use a Python 3.10+ interpreter:
 
@@ -370,7 +381,7 @@ cd server; python -m uvicorn src.app:app --port 8000
 ## Tests
 
 ```bash
-cd server && python -m pytest -q      # 52 tests
+cd server && python -m pytest -q      # 74 tests
 ```
 
 - **Pricing** (`tests/pricing/`) — the brief reproduced to the cent, threshold
@@ -380,7 +391,8 @@ cd server && python -m pytest -q      # 52 tests
 - **Agent** (`tests/agent/`) — the tool loop against a scripted LLM stub: the engine's
   numbers are what reach the conversation, violations come back as results (not errors)
   so the model self-corrects, history is sanitised and capped, and the round cap always
-  ends in a readable turn.
+  ends in a readable turn. Plus the OpenAI adapter's translation in both directions
+  (tool schemas, tool calls, tool results, finish reasons, error mapping) — no network.
 - **API** (`tests/api/`) — the three reviewer flows over HTTP: read and switch both
   configs, edit one and confirm the next quote changes, add a new one and quote against
   it. Plus validation, path-traversal, duplicate and last-config guards.

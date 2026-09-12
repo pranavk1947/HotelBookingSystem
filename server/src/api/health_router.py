@@ -14,6 +14,7 @@ async def health(settings: SettingsDep, repo: ConfigRepoDep) -> dict:
     return {
         "status": "healthy",
         "api_key_configured": settings.has_api_key,
-        "model": settings.anthropic_model,
+        "provider": settings.provider,
+        "model": settings.active_model,
         "configs": [summary.id for summary in repo.list_summaries()],
     }

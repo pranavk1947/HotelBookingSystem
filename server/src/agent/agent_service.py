@@ -24,9 +24,9 @@ from src.model.hotel_config import HotelConfig
 logger = logging.getLogger(__name__)
 
 SETUP_MESSAGE = (
-    "Setup needed: ANTHROPIC_API_KEY is not set, so I can't run the agent yet. "
-    "Add it to the .env file in the project root and restart. "
-    "The config page works without a key."
+    "Setup needed: no LLM API key is set, so I can't run the agent yet. Add "
+    "ANTHROPIC_API_KEY or OPENAI_API_KEY to the .env file in the project root "
+    "and restart. The config page works without a key."
 )
 
 

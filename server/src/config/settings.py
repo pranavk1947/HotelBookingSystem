@@ -20,6 +20,13 @@ class Settings(BaseSettings):
     anthropic_api_key: str = ""
     # Overridable so a different account or model tier needs no code change.
     anthropic_model: str = "claude-sonnet-5"
+
+    openai_api_key: str = ""
+    openai_model: str = "gpt-4o-mini"
+
+    # "auto" resolves to whichever key is present; Anthropic wins if both are.
+    llm_provider: str = "auto"
+
     max_tool_rounds: int = 6
     max_tokens: int = 2000
     # Caps token growth on a long negotiation.
@@ -30,7 +37,23 @@ class Settings(BaseSettings):
 
     @property
     def has_api_key(self) -> bool:
-        return bool(self.anthropic_api_key.strip())
+        """Either provider is enough to run a conversation."""
+        return bool(self.anthropic_api_key.strip() or self.openai_api_key.strip())
+
+    @property
+    def provider(self) -> str:
+        """The provider a turn will actually use."""
+        if self.llm_provider != "auto":
+            return self.llm_provider
+        if self.openai_api_key.strip() and not self.anthropic_api_key.strip():
+            return "openai"
+        return "anthropic"
+
+    @property
+    def active_model(self) -> str:
+        return (
+            self.openai_model if self.provider == "openai" else self.anthropic_model
+        )
 
 
 @lru_cache

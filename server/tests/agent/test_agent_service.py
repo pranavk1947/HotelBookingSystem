@@ -272,7 +272,7 @@ def test_missing_api_key_is_a_readable_turn_not_a_crash(
         config, [ChatMessage(role="user", content="hi")], TODAY
     )
     assert result.error == "missing_api_key"
-    assert "ANTHROPIC_API_KEY" in result.reply
+    assert "ANTHROPIC_API_KEY or OPENAI_API_KEY" in result.reply
 
 
 def test_impossible_date_is_a_violation_not_a_crash(

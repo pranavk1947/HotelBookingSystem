@@ -117,8 +117,9 @@ async function checkSetup() {
   if (!health.api_key_configured) {
     el.banner.hidden = false;
     el.banner.innerHTML =
-      "<strong>ANTHROPIC_API_KEY is not set.</strong> Add it to <code>.env</code> " +
-      "in the project root and restart. The config page works without it.";
+      "<strong>No LLM API key is set.</strong> Add <code>ANTHROPIC_API_KEY</code> or " +
+      "<code>OPENAI_API_KEY</code> to <code>.env</code> in the project root and " +
+      "restart. The config page works without one.";
   }
 }
 
