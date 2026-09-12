@@ -1,0 +1,67 @@
+
+Duration: 150 minutes · Started: 12/09/2026, 21:23
+
+Software Engineer: Elite
+100 MB maximum
+Take-Home Exercise: Software Engineer: Elite
+Overview
+Build an agent that helps a user assemble / negotiate a group proposal.
+
+The user opens a conversation describing what they need (a conference on these dates, at least this many rooms, meeting space, etc.). The agent should ask any clarifying questions it needs, including offering relevant upsells, and eventually send a proposal / quote: line items with quantities, unit prices, durations, and totals.
+
+Example opener:
+
+"We're hosting a 3-day sales conference in March. We'll need rooms for about 40 attendees, plus space for sessions and a closing dinner."
+Example proposal eventually arrived on:
+
+Line	Qty	Unit price	Duration	Subtotal
+Standard guest rooms	40	$189 / night	3 nights	$22,680
+Grand Ballroom (plenary + closing dinner)	1	$2,400 / day	3 days	$7,200
+Breakout room A	1	$650 / day	3 days	$1,950
+Breakout room B	1	$650 / day	3 days	$1,950
+AV package (projector, mics, staging)	1	$400 / day	3 days	$1,200
+Closing dinner (plated)	40	$75 / person	1 night	$3,000
+Subtotal				$37,980
+Volume discount (10% on rooms ≥ 30)				−$2,268
+Total				$35,712
+There should be a configuration page where we can configure the hotel's inventory (rooms, conference halls, other items) and any other configuration you think is necessary. Ship it with two out-of-the-box (OOTB) sample configs (e.g. two different hotels, or two different pricing/inventory setups) so we can talk to either agent immediately.
+
+Each config represents a distinct "agent" — its own inventory, pricing rules, packages, and any other per-hotel settings. The chat page must let the user select which config/agent they want to talk to before (or at the start of) a conversation.
+
+Inventory may be a static catalog — entries may represent what is currently available for the requested dates (items, quantities, prices, optional packages). No live availability tracking required.
+
+Beyond that, the design is yours — including what should be tool calls, skills, config, JSON, or natural-language prompts.
+
+What you must ship
+A locally runnable app with:
+
+A user conversation surface (a chat page is enough) with a config/agent selector — the user picks which hotel agent they're talking to
+A configuration page we can open in a browser to inspect and edit any config, and to add a new config (no code changes — config page only)
+Two OOTB sample configs so conversations work with no extra setup, and we can immediately see the agent adapt between them
+In-chat line items are enough. No PDF, email, or booking flow required.
+
+How we evaluate
+We will:
+
+Open your config page, read both OOTB configs, switch between them on the chat page, and check that each conversation produces a quote consistent with the selected config.
+Edit a config on the config page (no code changes), run another conversation against it, and check that the agent adapts.
+Add a brand-new config on the config page, select it on the chat page, and run a conversation against it.
+We're grading on quote correctness against config, how well the config anticipates real hotel business needs a new client might bring (pricing rules, packages, constraints — think beyond a flat price list), and conversation quality (clarify, upsell, close to a line-item proposal).
+
+Constraints
+Time-box to 2 hours. We expect you to use a coding agent to execute — the 2 hours is for design decisions and iteration, not hand-rolling a framework.
+
+Any language/framework. We must be able to start it locally and use both pages. No human-in-the-loop (HITL) during the user chat — the agent should handle the full conversation without prompting us to confirm or continue. Keep setup to npm install && npm start (or equivalent) plus one API key env var.
+
+Decisions to document
+In your README, mention any design decisions you made and why. Include high level business needs (ex: discounts) you attempted to handle.
+
+Implementation details
+Any language/framework.
+Two browser pages (chat + config) are required; no extra UI polish needed.
+Any coding agent / IDE.
+Submission
+Zip your project, including a short README covering:
+
+Your architecture, and why — including how a config-page edit is meant to change agent behavior
+Any env vars we need to set (an API key for OpenAI, Claude, or OpenRouter)
