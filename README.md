@@ -364,7 +364,15 @@ wins if both are set.
 | `ANTHROPIC_MODEL` | no | `claude-sonnet-5` | Override if your key has a different model. A 404 surfaces as a readable chat message. |
 | `OPENAI_MODEL` | no | `gpt-4o-mini` | Same. |
 | `LLM_PROVIDER` | no | `auto` | Force `anthropic` or `openai` when both keys are present. |
+| `MAX_TOKENS` | no | `8000` | Output ceiling per turn. Generous on purpose — see below. |
+| `OPENAI_BASE_URL` | no | — | Any OpenAI-compatible endpoint that supports tool calling (Sarvam, Groq, OpenRouter, a local Ollama). Blank means `api.openai.com`. |
 | `PORT` | no | `8000` | |
+
+`MAX_TOKENS` is a ceiling, not a target: you are billed for what is generated, not
+for the cap. It is set high because reasoning models spend most of the budget on
+hidden reasoning before they write anything, and a budget that runs out mid-quote
+truncates the table. On the OpenAI-compatible path that case is now detected and
+reported rather than returned as an empty turn.
 
 With neither key the app still boots: the config page is fully usable and the chat
 returns a readable setup message instead of crashing. `GET /health` reports which
@@ -428,4 +436,23 @@ clearing history, table↔JSON projection, validate errors, clone, new, save, de
 - **No streaming.** Replies are one HTTP round-trip. Streaming is a UI nicety that would
   complicate the tool loop for no grading value.
 - **No agent tests against the real API.** The loop is tested through an `LLMClient`
-  stub; the model's judgment is exercised by hand.
+  stub; the model's judgment is exercised by hand. `live_check.py` at the repo root
+  runs one real negotiation against each hotel and prints the quote it produced —
+  that is how the numbers below were verified.
+
+## Verified against a live model
+
+A real two-turn negotiation on each hotel, with every figure checked by hand:
+
+- **The Grand Cascadia** — 40 rooms × $189 × 3 nights = $22,680; volume discount
+  −$2,268; 22% service charge on the $3,000 dinner = $660; 9.5% tax on $35,172 =
+  $3,341.34; total **$38,513.34**; 25% deposit $9,628.34. The agent also surfaced the
+  $5,000 F&B minimum shortfall and upsold coffee service to close it.
+- **Hacienda del Sol** — resolved "the second Monday of March" to 8 March 2027, applied
+  the **seasonal peak** casita rate ($329, not $259), stacked the group rate and then
+  length-of-stay on the reduced base (−$2,368.80, −$3,268.94), billed the resort fee on
+  90 room-nights, and correctly did **not** apply the comp casita, which needs 40 rooms
+  against the 30 booked. Total **$58,855.03**.
+
+Same request, two configs, two different rule sets — each priced exactly as its JSON
+says.

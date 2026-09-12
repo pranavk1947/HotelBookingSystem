@@ -1,8 +1,12 @@
-"""OpenAI adapter that speaks the Anthropic message shape.
+"""OpenAI-compatible adapter that speaks the Anthropic message shape.
 
 The agent service is written against one vendor's shape; rather than teach it a
 second one, this client translates both ways at the boundary. Everything above
 it — the tool loop, the prompt builder, the pricing engine — is untouched.
+
+``base_url`` points it at any OpenAI-compatible endpoint (Sarvam, Groq,
+OpenRouter, a local Ollama) as long as that endpoint supports tool calling,
+which this design requires.
 """
 
 from __future__ import annotations
@@ -168,6 +172,19 @@ def from_openai_response(completion: Any) -> Response:
     )
 
     tool_calls = getattr(message, "tool_calls", None) or []
+
+    # Reasoning models (Sarvam, o-series) spend the output budget on hidden
+    # reasoning before they emit anything. When that budget runs out there is no
+    # content and no tool call, and silently returning an empty turn hides the
+    # one thing the operator needs to know.
+    if choice.finish_reason == "length" and not message.content and not tool_calls:
+        raise LLMError(
+            "response_truncated",
+            "The model used its whole output budget on reasoning and returned "
+            "nothing. Raise MAX_TOKENS in .env (reasoning models want 8000+) "
+            "or switch to a non-reasoning model.",
+        )
+
     if choice.finish_reason == "tool_calls" and tool_calls:
         content: list = []
         if message.content:
@@ -206,10 +223,13 @@ def _parse_arguments(arguments: str, tool_name: str) -> dict:
 class OpenAILLMClient:
     """Same ``create(**kwargs)`` contract as AnthropicLLMClient."""
 
-    def __init__(self, api_key: str, model: str) -> None:
+    def __init__(self, api_key: str, model: str, base_url: str = "") -> None:
         from openai import OpenAI
 
-        self._client = OpenAI(api_key=api_key)
+        self.base_url = base_url.strip()
+        self._client = OpenAI(
+            api_key=api_key, **({"base_url": self.base_url} if self.base_url else {})
+        )
         self.model = model
 
     def create(self, **kwargs: Any) -> Response:
@@ -220,7 +240,10 @@ class OpenAILLMClient:
             "messages": to_openai_messages(kwargs.get("system"), kwargs["messages"]),
         }
         if kwargs.get("max_tokens") is not None:
-            request["max_completion_tokens"] = kwargs["max_tokens"]
+            # OpenAI itself wants max_completion_tokens; compatible third parties
+            # (Sarvam among them) implement only the older max_tokens.
+            field = "max_tokens" if self.base_url else "max_completion_tokens"
+            request[field] = kwargs["max_tokens"]
         if kwargs.get("temperature") is not None:
             request["temperature"] = kwargs["temperature"]
 
@@ -241,10 +264,11 @@ class OpenAILLMClient:
                 "OpenAI rejected the API key. Check OPENAI_API_KEY in .env.",
             ) from exc
         except openai.NotFoundError as exc:
+            where = self.base_url or "OpenAI"
             raise LLMError(
                 "unknown_model",
-                f"The model '{self.model}' is not available on this API key. "
-                "Set OPENAI_MODEL in .env to one your account can use.",
+                f"The model '{self.model}' is not available at {where}. "
+                "Set OPENAI_MODEL in .env to one this endpoint serves.",
             ) from exc
         except openai.RateLimitError as exc:
             # OpenAI returns 429 for both throttling and an empty balance. Only

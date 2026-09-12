@@ -39,7 +39,9 @@ def _build_llm(settings):
         if not settings.openai_api_key.strip():
             logger.warning("llm_provider is 'openai' but OPENAI_API_KEY is empty")
             return None
-        return OpenAILLMClient(settings.openai_api_key, settings.openai_model)
+        return OpenAILLMClient(
+            settings.openai_api_key, settings.openai_model, settings.openai_base_url
+        )
     if not settings.anthropic_api_key.strip():
         logger.warning("llm_provider is 'anthropic' but ANTHROPIC_API_KEY is empty")
         return None
@@ -65,8 +67,12 @@ async def lifespan(app: FastAPI):
             "ANTHROPIC_API_KEY or OPENAI_API_KEY to .env and restart."
         )
     else:
+        endpoint = settings.openai_base_url or "default endpoint"
         logger.info(
-            "LLM provider: %s (model %s)", settings.provider, settings.active_model
+            "LLM provider: %s (model %s%s)",
+            settings.provider,
+            settings.active_model,
+            f" via {endpoint}" if settings.provider == "openai" and settings.openai_base_url else "",
         )
     logger.info("Chat:   http://127.0.0.1:%s/", port)
     logger.info("Config: http://127.0.0.1:%s/config", port)

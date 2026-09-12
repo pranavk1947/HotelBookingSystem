@@ -266,9 +266,10 @@ class StubCompletions:
         return self.result
 
 
-def client_with(stub: StubCompletions) -> OpenAILLMClient:
+def client_with(stub: StubCompletions, base_url: str = "") -> OpenAILLMClient:
     instance = OpenAILLMClient.__new__(OpenAILLMClient)
     instance.model = "gpt-4o-mini"
+    instance.base_url = base_url
     instance._client = SimpleNamespace(chat=SimpleNamespace(completions=stub))
     return instance
 
@@ -362,3 +363,49 @@ def test_an_empty_credit_balance_is_not_reported_as_throttling() -> None:
     assert caught.value.code == "no_credit"
     assert "no credits" in caught.value.message
     assert "Wait a moment" not in caught.value.message
+
+
+def test_openai_gets_max_completion_tokens_and_compatibles_get_max_tokens() -> None:
+    """Sarvam and friends implement the older max_tokens; OpenAI wants the new name."""
+    stub = StubCompletions(result=completion("stop", content="ok"))
+    client_with(stub).create(messages=[{"role": "user", "content": "hi"}], max_tokens=2000)
+    assert stub.request["max_completion_tokens"] == 2000
+    assert "max_tokens" not in stub.request
+
+    stub = StubCompletions(result=completion("stop", content="ok"))
+    client_with(stub, base_url="https://api.sarvam.ai/v1").create(
+        messages=[{"role": "user", "content": "hi"}], max_tokens=2000
+    )
+    assert stub.request["max_tokens"] == 2000
+    assert "max_completion_tokens" not in stub.request
+
+
+def test_unknown_model_error_names_the_endpoint_that_rejected_it() -> None:
+    import httpx
+    import openai
+
+    request = httpx.Request("POST", "https://api.sarvam.ai/v1/chat/completions")
+    response = httpx.Response(status_code=404, request=request)
+    stub = StubCompletions(error=openai.NotFoundError("nope", response=response, body=None))
+
+    with pytest.raises(LLMError) as caught:
+        client_with(stub, base_url="https://api.sarvam.ai/v1").create(
+            messages=[{"role": "user", "content": "hi"}]
+        )
+    assert "https://api.sarvam.ai/v1" in caught.value.message
+
+
+def test_budget_exhausted_by_reasoning_is_reported_not_swallowed() -> None:
+    """A reasoning model that never reaches its answer must not look like an
+    empty turn — the operator needs to know to raise MAX_TOKENS."""
+    with pytest.raises(LLMError) as caught:
+        from_openai_response(completion("length", content=None, tool_calls=None))
+
+    assert caught.value.code == "response_truncated"
+    assert "MAX_TOKENS" in caught.value.message
+
+
+def test_truncation_after_real_output_is_kept_not_raised() -> None:
+    """Partial content is still worth returning; only a wholly empty turn raises."""
+    response = from_openai_response(completion("length", content="Here is most of"))
+    assert response.content[0].text == "Here is most of"

@@ -23,12 +23,17 @@ class Settings(BaseSettings):
 
     openai_api_key: str = ""
     openai_model: str = "gpt-4o-mini"
+    # Point at any OpenAI-compatible endpoint (Sarvam, Groq, OpenRouter, Ollama).
+    # Empty means api.openai.com.
+    openai_base_url: str = ""
 
     # "auto" resolves to whichever key is present; Anthropic wins if both are.
     llm_provider: str = "auto"
 
     max_tool_rounds: int = 6
-    max_tokens: int = 2000
+    # Reasoning models spend much of this on hidden reasoning before replying,
+    # so the budget is well above what the visible answer needs.
+    max_tokens: int = 8000
     # Caps token growth on a long negotiation.
     max_history_messages: int = 24
 

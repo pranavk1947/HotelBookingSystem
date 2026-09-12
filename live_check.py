@@ -23,6 +23,13 @@ from src.model.chat import ChatMessage  # noqa: E402
 from src.repository.config_repository import FileHotelConfigRepository  # noqa: E402
 
 
+FOLLOW_UP = (
+    "Arrive the second Monday of March, three nights. One room per attendee. "
+    "One main session room for everyone plus two breakouts, and a plated dinner "
+    "on the final night. Go ahead and price it."
+)
+
+
 def main() -> int:
     settings = get_settings()
     if not settings.has_api_key:
@@ -30,12 +37,16 @@ def main() -> int:
         return 1
 
     if settings.provider == "openai":
-        llm = OpenAILLMClient(settings.openai_api_key, settings.openai_model)
+        llm = OpenAILLMClient(
+            settings.openai_api_key, settings.openai_model, settings.openai_base_url
+        )
     else:
         llm = AnthropicLLMClient(settings.anthropic_api_key, settings.anthropic_model)
 
     print(f"provider : {settings.provider}")
     print(f"model    : {settings.active_model}")
+    if settings.provider == "openai" and settings.openai_base_url:
+        print(f"endpoint : {settings.openai_base_url}")
 
     repo = FileHotelConfigRepository(settings.configs_dir)
     agent = AgentService(llm, SystemPromptBuilder(), settings)
@@ -48,10 +59,19 @@ def main() -> int:
         print("=" * 78)
         print(f"USER: {opener}\n")
 
-        result = agent.run_turn(
-            config, [ChatMessage(role="user", content=opener)], date.today()
-        )
-        print(f"AGENT:\n{result.reply}\n")
+        # A real negotiation: the opener, then an answer to whatever it asked.
+        # One turn only ever produces clarifying questions, by design.
+        history = [ChatMessage(role="user", content=opener)]
+        result = agent.run_turn(config, history, date.today())
+        print(f"AGENT (turn 1):\n{result.reply}\n")
+
+        if result.quote is None and not result.error:
+            history.append(ChatMessage(role="assistant", content=result.reply))
+            history.append(ChatMessage(role="user", content=FOLLOW_UP))
+            print(f"USER: {FOLLOW_UP}\n")
+            result = agent.run_turn(config, history, date.today())
+            print(f"AGENT (turn 2):\n{result.reply}\n")
+
         print(f"build_quote fired : {result.quote is not None}")
         if result.quote is not None:
             q = result.quote
