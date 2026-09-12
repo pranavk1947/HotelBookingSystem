@@ -1,0 +1,9 @@
+{
+  "name": "hotel-group-proposal-agent",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Shim so `npm install && npm start` works; the app itself is Python.",
+  "scripts": {
+    "start": "bash run.sh"
+  }
+}

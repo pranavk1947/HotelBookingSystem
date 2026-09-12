@@ -1,0 +1,237 @@
+{
+  "id": "hacienda-del-sol",
+  "name": "Hacienda del Sol",
+  "currency": "USD",
+  "persona": "You are Mateo, director of groups at Hacienda del Sol, a 60-key adobe resort in the Sonoran foothills. Warm, unhurried, a little proud of the place. You talk about the courtyard at golden hour and the mesquite grill, but you are precise about numbers. You are honest that the resort is small: you would rather shape a group to fit than oversell it.",
+  "sample_opener": "We're planning a 3-night leadership offsite for 30 people in March — somewhere with character, meeting space during the day and a proper dinner one night.",
+  "policies": {
+    "tax_pct": 12.1,
+    "min_nights": 2,
+    "min_lead_days": 21,
+    "max_attendees": 90,
+    "deposit_pct": 35,
+    "cancellation_note": "50% deposit refundable up to 60 days out; non-refundable inside 60 days. Peak-season blocks are non-refundable inside 90 days."
+  },
+  "fees": [
+    {
+      "id": "resort-fee",
+      "name": "Resort fee",
+      "basis": "per_room_night",
+      "value": 35.0
+    },
+    {
+      "id": "service-charge",
+      "name": "Service charge (food & beverage)",
+      "basis": "pct_of_category",
+      "category": "fnb",
+      "value": 20.0
+    }
+  ],
+  "inventory": [
+    {
+      "id": "casita-king",
+      "name": "Casita (king)",
+      "category": "room",
+      "unit": "per_night",
+      "unit_price": 259.0,
+      "available_qty": 60,
+      "capacity": 2,
+      "description": "Adobe casita with a private patio, kiva fireplace and no television by design.",
+      "includes_note": [
+        "Private patio",
+        "Breakfast for two",
+        "Wifi"
+      ],
+      "seasonal_rates": [
+        {
+          "label": "Spring peak",
+          "start": "03-01",
+          "end": "04-30",
+          "unit_price": 329.0
+        },
+        {
+          "label": "Summer low",
+          "start": "06-15",
+          "end": "08-31",
+          "unit_price": 199.0
+        }
+      ]
+    },
+    {
+      "id": "hacienda-suite",
+      "name": "Hacienda suite",
+      "category": "room",
+      "unit": "per_night",
+      "unit_price": 429.0,
+      "available_qty": 6,
+      "capacity": 3,
+      "description": "Two rooms around a private courtyard — the organiser's room.",
+      "includes_note": [
+        "Private courtyard",
+        "Breakfast for two"
+      ],
+      "seasonal_rates": [
+        {
+          "label": "Spring peak",
+          "start": "03-01",
+          "end": "04-30",
+          "unit_price": 529.0
+        }
+      ]
+    },
+    {
+      "id": "courtyard",
+      "name": "Grand Courtyard (plenary or dinner)",
+      "category": "meeting_space",
+      "unit": "per_day",
+      "unit_price": 1200.0,
+      "available_qty": 1,
+      "capacity": 80,
+      "description": "Open-air courtyard under the old fig tree. Plenary by day, long-table dinner by night. Weather call made at noon.",
+      "includes_note": [
+        "Setup and teardown",
+        "String lighting",
+        "Indoor weather backup"
+      ],
+      "seasonal_rates": []
+    },
+    {
+      "id": "palapa",
+      "name": "Palapa meeting pavilion",
+      "category": "meeting_space",
+      "unit": "per_day",
+      "unit_price": 900.0,
+      "available_qty": 1,
+      "capacity": 60,
+      "description": "Shaded open-sided pavilion, the natural breakout when the courtyard is in plenary.",
+      "includes_note": [
+        "Ceiling fans",
+        "Flipcharts"
+      ],
+      "seasonal_rates": []
+    },
+    {
+      "id": "library-room",
+      "name": "Library room (small breakout)",
+      "category": "meeting_space",
+      "unit": "per_day",
+      "unit_price": 450.0,
+      "available_qty": 1,
+      "capacity": 18,
+      "description": "Wood-panelled room off the main house — boardroom for 18.",
+      "includes_note": [
+        "Boardroom table",
+        "Whiteboard"
+      ],
+      "seasonal_rates": []
+    },
+    {
+      "id": "cmp-package",
+      "name": "Complete Meeting Package (per delegate)",
+      "category": "fnb",
+      "unit": "per_person_per_day",
+      "unit_price": 145.0,
+      "available_qty": 90,
+      "description": "The way most groups book here: one per-delegate rate that folds the meeting day together. Replaces separate room hire, breaks and lunch.",
+      "includes_note": [
+        "Meeting space for the day",
+        "Breakfast and mid-morning break",
+        "Working lunch",
+        "Afternoon break",
+        "Basic AV and flipcharts"
+      ],
+      "seasonal_rates": []
+    },
+    {
+      "id": "mesquite-dinner",
+      "name": "Mesquite-grill dinner (long table)",
+      "category": "fnb",
+      "unit": "per_person",
+      "unit_price": 95.0,
+      "available_qty": 90,
+      "description": "Family-style grill dinner at long tables in the courtyard, with the ranch's own salsas.",
+      "includes_note": [
+        "Family-style service",
+        "Two drink tokens"
+      ],
+      "seasonal_rates": []
+    },
+    {
+      "id": "sunrise-hike",
+      "name": "Guided sunrise hike",
+      "category": "service",
+      "unit": "per_person",
+      "unit_price": 55.0,
+      "available_qty": 40,
+      "description": "Ninety minutes into the foothills with a naturalist guide, back before the first session.",
+      "includes_note": [
+        "Naturalist guide",
+        "Trail breakfast"
+      ],
+      "seasonal_rates": []
+    },
+    {
+      "id": "av-basic",
+      "name": "AV set (projector, screen, two mics)",
+      "category": "av",
+      "unit": "per_day",
+      "unit_price": 350.0,
+      "available_qty": 2,
+      "description": "Brought in for the courtyard or palapa. Already included if you take the Complete Meeting Package.",
+      "includes_note": [
+        "Projector + screen",
+        "2 wireless mics"
+      ],
+      "seasonal_rates": []
+    }
+  ],
+  "rules": [
+    {
+      "type": "comp_item",
+      "label": "One complimentary casita per 40 booked",
+      "item_id": "casita-king",
+      "per_qty": 40,
+      "max_comps": 1
+    },
+    {
+      "type": "volume_discount",
+      "label": "Group rate (8% on 25+ casitas)",
+      "scope": {
+        "category": "room"
+      },
+      "min_qty": 25,
+      "discount_pct": 8.0
+    },
+    {
+      "type": "los_discount",
+      "label": "Length-of-stay discount (12% on 3+ nights)",
+      "scope": {
+        "category": "room"
+      },
+      "min_nights": 3,
+      "discount_pct": 12.0
+    }
+  ],
+  "fnb_minimum": {
+    "amount": 3500.0,
+    "when_category_booked": "meeting_space",
+    "note": "Groups taking meeting space carry a $3,500 food & beverage minimum — the Complete Meeting Package counts toward it."
+  },
+  "upsells": [
+    {
+      "item_id": "cmp-package",
+      "trigger": "meeting_space",
+      "pitch": "Most groups here take the Complete Meeting Package at $145 per delegate per day — space, breaks, working lunch and AV in one number. It is usually cheaper than piecing it together, and it clears the F&B minimum on its own."
+    },
+    {
+      "item_id": "mesquite-dinner",
+      "trigger": "always",
+      "pitch": "If you do one thing here, do the mesquite-grill dinner at the long table in the courtyard — $95 a head, and it is the night people talk about afterwards."
+    },
+    {
+      "item_id": "sunrise-hike",
+      "trigger": "always",
+      "pitch": "A guided sunrise hike at $55 a head is the easiest morning-one icebreaker we offer, and everyone is back before the first session."
+    }
+  ]
+}

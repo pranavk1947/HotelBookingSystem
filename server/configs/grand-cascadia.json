@@ -1,0 +1,217 @@
+{
+  "id": "grand-cascadia",
+  "name": "The Grand Cascadia",
+  "currency": "USD",
+  "persona": "You are Dana, senior group sales manager at The Grand Cascadia, a 400-room downtown convention hotel. Corporate and consultative. Concise and warm, never gushing. You lead with what the space does for the meeting, not with adjectives. You are comfortable talking numbers and you never apologise for the rate.",
+  "sample_opener": "We're hosting a 3-day sales conference in March. We'll need rooms for about 40 attendees, plus space for sessions and a closing dinner.",
+  "policies": {
+    "tax_pct": 9.5,
+    "min_nights": 1,
+    "min_lead_days": 14,
+    "max_attendees": 500,
+    "deposit_pct": 25.0,
+    "cancellation_note": "Free cancellation up to 30 days before arrival; 50% of the room block thereafter."
+  },
+  "fees": [
+    {
+      "id": "service-charge",
+      "name": "Service charge (food & beverage)",
+      "basis": "pct_of_category",
+      "value": 22.0,
+      "category": "fnb"
+    }
+  ],
+  "inventory": [
+    {
+      "id": "std-room",
+      "name": "Standard guest rooms",
+      "category": "room",
+      "unit": "per_night",
+      "unit_price": 189.0,
+      "available_qty": 400,
+      "capacity": 2,
+      "min_qty": null,
+      "max_qty": null,
+      "description": "King or double-queen, 320 sq ft, work desk, fast wifi included.",
+      "includes_note": [
+        "Wifi",
+        "Fitness centre"
+      ],
+      "seasonal_rates": []
+    },
+    {
+      "id": "exec-suite",
+      "name": "Executive suite",
+      "category": "room",
+      "unit": "per_night",
+      "unit_price": 329.0,
+      "available_qty": 20,
+      "capacity": 2,
+      "min_qty": null,
+      "max_qty": null,
+      "description": "Separate living area — typically taken by the organiser or exec sponsor.",
+      "includes_note": [
+        "Lounge access",
+        "Wifi"
+      ],
+      "seasonal_rates": []
+    },
+    {
+      "id": "grand-ballroom",
+      "name": "Grand Ballroom (plenary + closing dinner)",
+      "category": "meeting_space",
+      "unit": "per_day",
+      "unit_price": 2400.0,
+      "available_qty": 1,
+      "capacity": 500,
+      "min_qty": null,
+      "max_qty": null,
+      "description": "7,200 sq ft, divisible, theatre or banquet setup, in-house rigging.",
+      "includes_note": [
+        "Setup and teardown",
+        "House sound",
+        "Registration desk"
+      ],
+      "seasonal_rates": []
+    },
+    {
+      "id": "breakout-a",
+      "name": "Breakout room A",
+      "category": "meeting_space",
+      "unit": "per_day",
+      "unit_price": 650.0,
+      "available_qty": 1,
+      "capacity": 60,
+      "min_qty": null,
+      "max_qty": null,
+      "description": "Boardroom or classroom setup for 60, natural light.",
+      "includes_note": [
+        "Whiteboard",
+        "Flipchart"
+      ],
+      "seasonal_rates": []
+    },
+    {
+      "id": "breakout-b",
+      "name": "Breakout room B",
+      "category": "meeting_space",
+      "unit": "per_day",
+      "unit_price": 650.0,
+      "available_qty": 1,
+      "capacity": 60,
+      "min_qty": null,
+      "max_qty": null,
+      "description": "Mirror of Breakout A across the pre-function corridor.",
+      "includes_note": [
+        "Whiteboard",
+        "Flipchart"
+      ],
+      "seasonal_rates": []
+    },
+    {
+      "id": "av-package",
+      "name": "AV package (projector, mics, staging)",
+      "category": "av",
+      "unit": "per_day",
+      "unit_price": 400.0,
+      "available_qty": 4,
+      "capacity": null,
+      "min_qty": null,
+      "max_qty": null,
+      "description": "Projector and screen, two wireless handhelds, a lectern mic and low staging, with a technician on call.",
+      "includes_note": [
+        "Projector + screen",
+        "2 wireless mics",
+        "Lectern and staging",
+        "Technician on call"
+      ],
+      "seasonal_rates": []
+    },
+    {
+      "id": "plated-dinner",
+      "name": "Closing dinner (plated)",
+      "category": "fnb",
+      "unit": "per_person",
+      "unit_price": 75.0,
+      "available_qty": 500,
+      "capacity": null,
+      "min_qty": null,
+      "max_qty": null,
+      "description": "Three-course plated dinner with a wine pour, served in the Ballroom.",
+      "includes_note": [
+        "Three courses",
+        "One wine pour",
+        "Banquet setup"
+      ],
+      "seasonal_rates": []
+    },
+    {
+      "id": "coffee-break",
+      "name": "Continuous coffee break service",
+      "category": "fnb",
+      "unit": "per_person_per_day",
+      "unit_price": 18.0,
+      "available_qty": 500,
+      "capacity": null,
+      "min_qty": null,
+      "max_qty": null,
+      "description": "All-day coffee, tea and afternoon snacks in the pre-function space.",
+      "includes_note": [
+        "AM and PM refresh",
+        "Whole fruit and pastries"
+      ],
+      "seasonal_rates": []
+    },
+    {
+      "id": "welcome-reception",
+      "name": "Welcome reception (passed canapés)",
+      "category": "fnb",
+      "unit": "per_person",
+      "unit_price": 48.0,
+      "available_qty": 500,
+      "capacity": null,
+      "min_qty": null,
+      "max_qty": null,
+      "description": "Ninety-minute reception with passed canapés and a hosted bar hour.",
+      "includes_note": [
+        "Passed canapés",
+        "One hosted bar hour"
+      ],
+      "seasonal_rates": []
+    }
+  ],
+  "rules": [
+    {
+      "type": "volume_discount",
+      "label": "Volume discount (10% on rooms ≥ 30)",
+      "scope": {
+        "category": "room",
+        "item_id": null
+      },
+      "min_qty": 30,
+      "discount_pct": 10.0
+    }
+  ],
+  "fnb_minimum": {
+    "amount": 5000.0,
+    "when_category_booked": "meeting_space",
+    "note": "Booking meeting space carries a $5,000 food & beverage minimum."
+  },
+  "upsells": [
+    {
+      "item_id": "av-package",
+      "trigger": "meeting_space",
+      "pitch": "Groups running sessions in the Ballroom almost always add the AV package — projector, mics and staging with a technician on call, at $400 a day. It saves renting in, and the tech is already in the building."
+    },
+    {
+      "item_id": "coffee-break",
+      "trigger": "meeting_space",
+      "pitch": "Continuous coffee service at $18 per person per day keeps people in the room between sessions — and it counts toward the food and beverage minimum."
+    },
+    {
+      "item_id": "welcome-reception",
+      "trigger": "meeting_space",
+      "pitch": "A welcome reception on night one at $48 per person sets the tone before the first session, and it is the easiest way to clear the F&B minimum."
+    }
+  ]
+}

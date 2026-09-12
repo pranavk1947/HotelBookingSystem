@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hotel configuration</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Hotel configuration</h1>
+    <span class="muted">Each config is one agent: its own inventory, pricing rules and persona.</span>
+    <span class="spacer"></span>
+    <a href="/">← Back to chat</a>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>Configs</h2>
+      <div id="list"></div>
+      <button id="new" type="button" style="width:100%;margin-top:10px">+ New config</button>
+    </aside>
+
+    <main class="main">
+      <h2 id="title" style="margin:0;font-size:20px">—</h2>
+      <div class="muted" id="subtitle"></div>
+
+      <div class="toolbar">
+        <button id="validate" type="button">Validate</button>
+        <button id="save" class="primary" type="button">Save</button>
+        <button id="clone" type="button">Clone as new</button>
+        <button id="delete" class="danger" type="button">Delete</button>
+        <a id="chat-link" href="/" style="margin-left:auto">Talk to this agent →</a>
+      </div>
+
+      <div id="status" class="status"></div>
+      <ul id="errors" class="errors" hidden></ul>
+
+      <div class="card" id="inventory-card">
+        <h3>Inventory — quick edit</h3>
+        <div class="muted" style="margin-bottom:8px">
+          Edits here update the JSON below, which is the source of truth. Changes take
+          effect on the next chat message — no restart.
+        </div>
+        <table class="grid" id="inventory">
+          <thead>
+            <tr>
+              <th>Item</th><th>Category</th><th>Unit</th>
+              <th style="text-align:right">Price</th>
+              <th style="text-align:right">Available</th>
+              <th style="text-align:right">Capacity</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <button id="add-item" type="button" style="margin-top:10px">+ Add item</button>
+      </div>
+
+      <div class="card" id="summary-card">
+        <h3>Rules, fees &amp; policies</h3>
+        <div id="summary"></div>
+      </div>
+
+      <div class="card">
+        <h3>Full config JSON — source of truth</h3>
+        <textarea id="json" spellcheck="false"></textarea>
+      </div>
+    </main>
+  </div>
+
+  <script src="/static/config.js"></script>
+</body>
+</html>

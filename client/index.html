@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Group proposals — chat</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Group proposals</h1>
+    <label for="agent">Hotel</label>
+    <select id="agent" aria-label="Which hotel agent to talk to"></select>
+    <button id="sample" type="button" title="Fill the box with this hotel's sample request">Try a sample request</button>
+    <button id="reset" type="button">New conversation</button>
+    <span class="spacer"></span>
+    <a href="/config">Configure hotels →</a>
+  </header>
+
+  <div id="banner" class="banner" hidden></div>
+
+  <main id="chat" aria-live="polite"></main>
+
+  <form class="composer" id="composer">
+    <div class="composer-inner">
+      <textarea id="input" rows="1" placeholder="Describe what you need — dates, headcount, sessions, meals…"></textarea>
+      <button class="primary" id="send" type="submit">Send</button>
+    </div>
+  </form>
+
+  <script src="/static/chat.js"></script>
+</body>
+</html>
