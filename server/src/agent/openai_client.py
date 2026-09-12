@@ -247,6 +247,16 @@ class OpenAILLMClient:
                 "Set OPENAI_MODEL in .env to one your account can use.",
             ) from exc
         except openai.RateLimitError as exc:
+            # OpenAI returns 429 for both throttling and an empty balance. Only
+            # one of those is fixed by waiting, so say which it is.
+            body = getattr(exc, "body", None) or {}
+            if body.get("type") == "insufficient_quota":
+                raise LLMError(
+                    "no_credit",
+                    "This OpenAI account has no credits left, so the request was "
+                    "refused. Add credits at platform.openai.com/settings/"
+                    "organization/billing, or set ANTHROPIC_API_KEY in .env instead.",
+                ) from exc
             raise LLMError(
                 "rate_limited",
                 "OpenAI is rate limiting this key. Wait a moment and resend.",

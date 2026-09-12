@@ -340,3 +340,25 @@ def test_sdk_errors_map_to_the_shared_llm_error_codes(
 
     assert caught.value.code == expected_code
     assert "OPENAI" in caught.value.message or "OpenAI" in caught.value.message
+
+
+def test_an_empty_credit_balance_is_not_reported_as_throttling() -> None:
+    """OpenAI returns 429 for both; only one of them is fixed by waiting."""
+    import httpx
+    import openai
+
+    request = httpx.Request("POST", "https://api.openai.com/v1/chat/completions")
+    response = httpx.Response(status_code=429, request=request)
+    error = openai.RateLimitError(
+        "no credits",
+        response=response,
+        body={"type": "insufficient_quota", "code": "credit_balance_exhausted"},
+    )
+
+    stub = StubCompletions(error=error)
+    with pytest.raises(LLMError) as caught:
+        client_with(stub).create(messages=[{"role": "user", "content": "hi"}])
+
+    assert caught.value.code == "no_credit"
+    assert "no credits" in caught.value.message
+    assert "Wait a moment" not in caught.value.message
