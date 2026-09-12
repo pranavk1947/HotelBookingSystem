@@ -11,6 +11,10 @@ cp .env.example .env      # add your ANTHROPIC_API_KEY
 ./run.sh                  # or: npm install && npm start
 ```
 
+Needs **Python 3.10+** (macOS ships 3.9 as `/usr/bin/python3`; `run.sh` finds a newer
+one if you have it, or set `PYTHON_BIN=/path/to/python3.12`). Nothing else to install —
+`run.sh` creates the virtualenv and pulls the dependencies itself.
+
 | Page | URL | What it does |
 |---|---|---|
 | Chat | http://127.0.0.1:8000/ | Pick a hotel agent, negotiate, get a quote |
@@ -355,7 +359,7 @@ Interactive docs at `/apidocs`.
 | `ANTHROPIC_MODEL` | no | `claude-sonnet-5` | Override if your key has a different model. A 404 surfaces as a readable chat message. |
 | `PORT` | no | `8000` | |
 
-Windows (PowerShell), if `run.sh` isn't available:
+Windows (PowerShell), if `run.sh` isn't available — use a Python 3.10+ interpreter:
 
 ```powershell
 python -m venv .venv; .\.venv\Scripts\Activate.ps1
